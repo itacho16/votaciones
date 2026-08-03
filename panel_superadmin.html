@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel de Plataforma — Elecciones Escolares</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink-navy: #17223B;
+    --ink-navy-soft: #22314f;
+    --paper: #EFEDE3;
+    --paper-card: #F8F6EF;
+    --stamp-red: #9E2A2B;
+    --stamp-red-soft: rgba(158,42,43,0.10);
+    --gold: #B8933F;
+    --gold-soft: rgba(184,147,63,0.12);
+    --graphite: #262524;
+    --graphite-soft: #565248;
+    --success-green: #35603F;
+    --success-soft: rgba(53,96,63,0.10);
+    --line: #D9D4C4;
+    --radius: 4px;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    font-family:'IBM Plex Sans', sans-serif;
+    background: var(--paper);
+    color: var(--graphite);
+    min-height: 100vh;
+  }
+
+  /* ---------- Login ---------- */
+  #loginGate{
+    min-height: 100vh;
+    display:flex; align-items:center; justify-content:center;
+    background: var(--ink-navy);
+    padding: 20px;
+  }
+  .login-card{
+    width: 100%; max-width: 380px;
+    background: var(--paper-card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: 0 24px 48px rgba(0,0,0,0.32);
+    padding: 38px 34px 30px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .login-card::before{
+    content:"";
+    position:absolute; top:0; left:0; right:0; height:5px;
+    background: linear-gradient(90deg, var(--ink-navy) 0%, var(--ink-navy) 33%, var(--gold) 33%, var(--gold) 66%, var(--stamp-red) 66%);
+  }
+  .login-card .seal-icon{
+    width: 52px; height: 52px; margin: 0 auto 14px;
+    border: 2px solid var(--stamp-red); border-radius: 50%;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces', serif; font-weight:600; font-size: 18px; color: var(--stamp-red);
+  }
+  .login-card h2{ font-family:'Fraunces', serif; font-size:20px; font-weight:600; margin:0 0 6px; color:var(--ink-navy); }
+  .login-card p.desc{ font-size:13px; color:var(--graphite-soft); margin:0 0 22px; }
+  .login-card .form-group{ margin-bottom:14px; text-align:left; }
+  .login-card .field-label{
+    font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--graphite-soft); display:block; margin-bottom:6px;
+  }
+  .login-card input[type=email], .login-card input[type=password]{
+    width:100%; padding:11px 12px; border:1.5px solid var(--line); border-radius:var(--radius);
+    font-size:14px; font-family:'IBM Plex Sans', sans-serif; background:#fff; color:var(--graphite);
+  }
+  .login-card input:focus{ outline:none; border-color:var(--ink-navy); }
+  .login-error{
+    font-size:13px; color:var(--stamp-red); margin: -4px 0 14px; text-align:left; display:none;
+  }
+  .btn{
+    font-family:'IBM Plex Sans', sans-serif; font-weight:600; font-size:14px;
+    padding: 10px 18px; border-radius: var(--radius); border:none; cursor:pointer;
+  }
+  .btn-primary{ background: var(--ink-navy); color:#F1EFE6; width:100%; }
+  .btn-primary:hover{ background: var(--ink-navy-soft); }
+  .btn:focus-visible{ outline: 3px solid var(--gold); outline-offset:2px; }
+
+  /* ---------- App ---------- */
+  #appRoot{ display:none; }
+  .topbar{
+    background: var(--ink-navy); color:#F1EFE6;
+    padding: 22px 40px; display:flex; justify-content:space-between; align-items:center; gap:20px; flex-wrap:wrap;
+  }
+  .topbar .eyebrow{
+    font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:.14em;
+    text-transform:uppercase; color: var(--gold); margin-bottom:4px;
+  }
+  .topbar h1{ font-family:'Fraunces', serif; font-size:20px; font-weight:600; margin:0; }
+  .topbar .sesion{ font-size:13px; color:rgba(241,239,230,0.7); text-align:right; }
+  .topbar button{
+    background:none; border:1px solid rgba(241,239,230,0.35); color:#F1EFE6;
+    font-size:12.5px; font-weight:600; padding:7px 13px; border-radius:var(--radius);
+    cursor:pointer; margin-top:6px;
+  }
+  .topbar button:hover{ background:rgba(255,255,255,0.08); }
+
+  .main{ padding: 30px 40px 60px; max-width: 1040px; margin: 0 auto; }
+  .summary-bar{ display:flex; gap:14px; margin-bottom:26px; flex-wrap:wrap; }
+  .summary-chip{
+    background: var(--paper-card); border:1px solid var(--line); border-radius: var(--radius);
+    padding: 12px 18px; min-width:140px;
+  }
+  .summary-chip .num{ font-family:'Fraunces', serif; font-size:24px; font-weight:600; color:var(--ink-navy); }
+  .summary-chip .label{ font-size:11.5px; color:var(--graphite-soft); text-transform:uppercase; letter-spacing:.05em; font-family:'IBM Plex Mono', monospace; }
+
+  .colegio-card{
+    background: var(--paper-card); border:1px solid var(--line); border-radius: var(--radius);
+    box-shadow: 0 12px 28px rgba(23,34,59,0.08);
+    margin-bottom: 18px; overflow:hidden;
+  }
+  .colegio-head{
+    padding: 16px 20px; display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap;
+    border-bottom: 1px solid var(--line);
+  }
+  .colegio-head h3{ font-family:'Fraunces', serif; font-size:17px; font-weight:600; margin:0 0 3px; color:var(--ink-navy); }
+  .colegio-head .slug{ font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--graphite-soft); }
+  .colegio-head .meta{ font-size:12.5px; color:var(--graphite-soft); display:flex; gap:14px; flex-wrap:wrap; }
+  .status-tag{
+    font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:.05em; text-transform:uppercase;
+    padding: 3px 9px; border-radius: 20px; font-weight:500;
+  }
+  .status-activo{ background: var(--success-soft); color: var(--success-green); }
+  .status-inactivo{ background: var(--stamp-red-soft); color: var(--stamp-red); }
+
+  table.admins-table{ width:100%; border-collapse:collapse; }
+  table.admins-table th, table.admins-table td{
+    text-align:left; padding: 10px 20px; font-size:13px; border-bottom:1px solid var(--line);
+  }
+  table.admins-table th{
+    font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:.05em; text-transform:uppercase;
+    color:var(--graphite-soft); font-weight:500; background: rgba(217,212,196,0.25);
+  }
+  table.admins-table tr:last-child td{ border-bottom:none; }
+  .rol-badge{
+    font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:.04em; text-transform:uppercase;
+    padding:2px 8px; border-radius:20px; background: var(--gold-soft); color:#8a6a26; font-weight:600;
+  }
+  .plataforma-badge{
+    font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:.04em; text-transform:uppercase;
+    padding:2px 8px; border-radius:20px; background: var(--stamp-red-soft); color:var(--stamp-red); font-weight:600;
+    margin-left:6px;
+  }
+  .sin-admins{ padding: 16px 20px; font-size:13px; color:var(--graphite-soft); font-style:italic; }
+  .estado-mensaje{ text-align:center; padding: 60px 20px; color:var(--graphite-soft); font-size:14px; }
+</style>
+</head>
+<body>
+
+<div id="loginGate">
+  <div class="login-card">
+    <div class="seal-icon">P</div>
+    <h2>Panel de plataforma</h2>
+    <p class="desc">Acceso exclusivo para superadmins de plataforma. Aquí se ven todos los colegios registrados, no solo el tuyo.</p>
+    <form id="loginForm">
+      <div class="form-group">
+        <label class="field-label">Correo</label>
+        <input type="email" id="loginEmail" placeholder="tucorreo@dominio.com" required>
+      </div>
+      <div class="form-group">
+        <label class="field-label">Contraseña</label>
+        <input type="password" id="loginPassword" placeholder="••••••••" required>
+      </div>
+      <div class="login-error" id="loginError">Correo o contraseña incorrectos.</div>
+      <button type="submit" class="btn btn-primary" id="btnLogin">Ingresar</button>
+    </form>
+  </div>
+</div>
+
+<div id="appRoot">
+  <div class="topbar">
+    <div>
+      <div class="eyebrow">Vista de plataforma</div>
+      <h1>Colegios registrados</h1>
+    </div>
+    <div class="sesion">
+      Sesión: <strong id="sesionNombre"></strong><br>
+      <button id="btnLogout">Cerrar sesión</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="summary-bar" id="summaryBar"></div>
+    <div id="colegiosLista"></div>
+  </div>
+</div>
+
+<script>
+  const API_BASE = ''; // mismo origen que este archivo
+
+  async function apiFetch(ruta, opciones = {}) {
+    const resp = await fetch(API_BASE + ruta, {
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      ...opciones,
+    });
+    const data = await resp.json().catch(() => ({}));
+    if (!resp.ok) {
+      throw new Error(data.error || 'Ocurrió un error inesperado.');
+    }
+    return data;
+  }
+
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const errorBox = document.getElementById('loginError');
+    errorBox.style.display = 'none';
+
+    try {
+      const data = await apiFetch('/auth/login.php', {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!data.admin.es_plataforma) {
+        // Esta cuenta inició sesión correctamente, pero no tiene acceso
+        // de plataforma: cerramos su sesión de inmediato y lo bloqueamos
+        // aquí mismo, sin llegar a mostrar ningún dato.
+        await apiFetch('/auth/logout.php', { method: 'POST' }).catch(() => {});
+        errorBox.textContent = 'Esta cuenta no tiene acceso al panel de plataforma.';
+        errorBox.style.display = 'block';
+        return;
+      }
+
+      mostrarPanel(data.admin);
+    } catch (err) {
+      errorBox.textContent = err.message;
+      errorBox.style.display = 'block';
+    }
+  });
+
+  document.getElementById('btnLogout').addEventListener('click', async () => {
+    await apiFetch('/auth/logout.php', { method: 'POST' }).catch(() => {});
+    location.reload();
+  });
+
+  function mostrarPanel(admin) {
+    document.getElementById('loginGate').style.display = 'none';
+    document.getElementById('appRoot').style.display = 'block';
+    document.getElementById('sesionNombre').textContent = admin.nombre;
+    cargarColegios();
+  }
+
+  function esc(s) {
+    return String(s ?? '').replace(/[&<>"']/g, (c) => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+    }[c]));
+  }
+
+  function formatearFecha(iso) {
+    if (!iso) return '—';
+    return new Date(iso).toLocaleDateString('es-PE', { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
+  async function cargarColegios() {
+    const lista = document.getElementById('colegiosLista');
+    lista.innerHTML = '<div class="estado-mensaje">Cargando colegios…</div>';
+
+    try {
+      const data = await apiFetch('/plataforma/colegios_listar.php');
+      renderResumen(data.colegios);
+      renderColegios(data.colegios);
+    } catch (err) {
+      lista.innerHTML = `<div class="estado-mensaje">${esc(err.message)}</div>`;
+    }
+  }
+
+  function renderResumen(colegios) {
+    const totalAdmins = colegios.reduce((acc, c) => acc + c.admins.length, 0);
+    const totalEstudiantes = colegios.reduce((acc, c) => acc + Number(c.total_estudiantes), 0);
+    const totalElecciones = colegios.reduce((acc, c) => acc + Number(c.total_elecciones), 0);
+
+    document.getElementById('summaryBar').innerHTML = `
+      <div class="summary-chip"><div class="num">${colegios.length}</div><div class="label">Colegios</div></div>
+      <div class="summary-chip"><div class="num">${totalAdmins}</div><div class="label">Administradores</div></div>
+      <div class="summary-chip"><div class="num">${totalEstudiantes}</div><div class="label">Estudiantes</div></div>
+      <div class="summary-chip"><div class="num">${totalElecciones}</div><div class="label">Elecciones</div></div>
+    `;
+  }
+
+  function renderColegios(colegios) {
+    const lista = document.getElementById('colegiosLista');
+
+    if (colegios.length === 0) {
+      lista.innerHTML = '<div class="estado-mensaje">Todavía no hay colegios registrados.</div>';
+      return;
+    }
+
+    lista.innerHTML = colegios.map((c) => `
+      <div class="colegio-card">
+        <div class="colegio-head">
+          <div>
+            <h3>${esc(c.nombre)}</h3>
+            <div class="slug">${esc(c.slug)}</div>
+          </div>
+          <div style="text-align:right;">
+            <span class="status-tag ${c.activo ? 'status-activo' : 'status-inactivo'}">${c.activo ? 'Activo' : 'Inactivo'}</span>
+            <div class="meta" style="margin-top:6px; justify-content:flex-end;">
+              <span>${c.total_estudiantes} estudiantes</span>
+              <span>${c.total_elecciones} elecciones</span>
+              <span>Creado ${formatearFecha(c.creado_en)}</span>
+            </div>
+          </div>
+        </div>
+        ${c.admins.length === 0 ? '<div class="sin-admins">Este colegio todavía no tiene administradores registrados.</div>' : `
+          <table class="admins-table">
+            <thead>
+              <tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Creado</th></tr>
+            </thead>
+            <tbody>
+              ${c.admins.map((a) => `
+                <tr>
+                  <td>${esc(a.nombre)}</td>
+                  <td>${esc(a.email)}</td>
+                  <td>
+                    <span class="rol-badge">${esc(a.rol)}</span>
+                    ${a.es_superadmin_plataforma ? '<span class="plataforma-badge">Plataforma</span>' : ''}
+                  </td>
+                  <td>${formatearFecha(a.creado_en)}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `}
+      </div>
+    `).join('');
+  }
+
+  // Si ya hay una sesión activa con acceso de plataforma (ej. recargaste
+  // la página), entra directo sin pedir login de nuevo.
+  (async () => {
+    try {
+      const data = await apiFetch('/auth/me.php');
+      if (data.admin.es_plataforma) {
+        mostrarPanel(data.admin);
+      }
+    } catch (err) {
+      // No autenticado: se queda en la pantalla de login, normal.
+    }
+  })();
+</script>
+
+</body>
+</html>

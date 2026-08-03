@@ -1,0 +1,9 @@
+{
+    "name": "colegio/votacion-escolar-backend",
+    "description": "Backend PHP para la plataforma de votaciones escolares",
+    "require": {
+        "php": ">=8.1",
+        "phpoffice/phpspreadsheet": "^2.0",
+        "dompdf/dompdf": "^3.0"
+    }
+}

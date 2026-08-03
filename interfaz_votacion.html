@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elecciones Escolares — Cédula de Votación</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink-navy: #17223B;
+    --ink-navy-soft: #22314f;
+    --paper: #EFEDE3;
+    --paper-card: #F8F6EF;
+    --stamp-red: #9E2A2B;
+    --stamp-red-soft: rgba(158,42,43,0.12);
+    --gold: #B8933F;
+    --graphite: #262524;
+    --graphite-soft: #565248;
+    --success-green: #35603F;
+    --line: #D9D4C4;
+    --radius: 4px;
+  }
+
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background: var(--ink-navy);
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(255,255,255,0.03), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(255,255,255,0.02), transparent 40%);
+    font-family: 'IBM Plex Sans', sans-serif;
+    color: var(--graphite);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 32px 16px 64px;
+  }
+
+  .stage{ width: 100%; max-width: 640px; }
+
+  /* ---------- Header institucional ---------- */
+  .masthead{
+    text-align: center;
+    color: #F1EFE6;
+    margin-bottom: 22px;
+  }
+  .masthead .eyebrow{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+  .masthead h1{
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 28px;
+    margin: 0;
+    letter-spacing: 0.01em;
+  }
+  .masthead .sub{
+    font-size: 13px;
+    color: rgba(241,239,230,0.65);
+    margin-top: 4px;
+  }
+
+  /* ---------- Vista: acceso con código ---------- */
+  .card{
+    background: var(--paper-card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: 0 24px 48px rgba(0,0,0,0.28);
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before{
+    content:"";
+    position:absolute; top:0; left:0; right:0; height:5px;
+    background: linear-gradient(90deg, var(--ink-navy) 0%, var(--ink-navy) 33%, var(--gold) 33%, var(--gold) 66%, var(--stamp-red) 66%);
+  }
+
+  .access-view{ padding: 40px 36px 32px; text-align: center; }
+  .access-view h2{
+    font-family: 'Fraunces', serif;
+    font-size: 21px;
+    font-weight: 600;
+    margin: 12px 0 6px;
+  }
+  .access-view p.desc{
+    font-size: 14px;
+    color: var(--graphite-soft);
+    margin: 0 0 26px;
+    line-height: 1.5;
+  }
+  .seal-icon{
+    width: 56px; height: 56px; margin: 0 auto 4px;
+    border: 2px solid var(--ink-navy);
+    border-radius: 50%;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces', serif; font-weight:600; font-size: 20px;
+    color: var(--ink-navy);
+  }
+
+  .field-label{
+    display:block; text-align:left;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--graphite-soft);
+    margin-bottom: 6px;
+  }
+  .code-input{
+    width: 100%;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 20px; letter-spacing: 0.12em;
+    text-align: center;
+    padding: 14px 12px;
+    border: 1.5px solid var(--line);
+    border-radius: var(--radius);
+    background: #fff;
+    color: var(--ink-navy);
+    margin-bottom: 18px;
+  }
+  .code-input:focus{ outline: none; border-color: var(--ink-navy); }
+  .code-input::placeholder{ color: #b7b2a2; letter-spacing: 0.08em; }
+
+  .btn{
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    padding: 13px 22px;
+    border-radius: var(--radius);
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .btn:focus-visible{ outline: 3px solid var(--gold); outline-offset: 2px; }
+  .btn-primary{ background: var(--ink-navy); color: #F1EFE6; }
+  .btn-primary:hover{ background: var(--ink-navy-soft); }
+  .btn-primary:disabled{ background:#a9a495; cursor:not-allowed; }
+  .btn-stamp{ background: var(--stamp-red); color: #fff; }
+  .btn-stamp:hover{ box-shadow: 0 6px 18px rgba(158,42,43,0.35); }
+  .btn-ghost{
+    background: transparent; color: var(--graphite-soft);
+    border: 1.5px solid var(--line);
+  }
+  .error-msg{
+    font-size: 13px; color: var(--stamp-red);
+    margin: -8px 0 16px; text-align:left;
+    display:none;
+  }
+
+  /* ---------- Cuadernillo: progreso de hojas ---------- */
+  .sheet-progress{
+    display:flex; justify-content:center; gap: 8px;
+    margin-bottom: 18px;
+  }
+  .sheet-dot{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: rgba(241,239,230,0.45);
+    display:flex; align-items:center; gap:6px;
+  }
+  .sheet-dot .dash{
+    width: 22px; height: 2px; background: rgba(241,239,230,0.25);
+  }
+  .sheet-dot.active{ color: var(--gold); }
+  .sheet-dot.done{ color: rgba(241,239,230,0.75); }
+
+  /* ---------- Vista: cédula de votación ---------- */
+  .ballot-view{ display:none; }
+  .ballot-view.visible{ display:block; }
+
+  .ballot-head{
+    padding: 24px 28px 16px;
+    border-bottom: 1px dashed var(--line);
+  }
+  .ballot-head .cargo-eyebrow{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+  .ballot-head h2{
+    font-family: 'Fraunces', serif;
+    font-size: 24px; font-weight: 600; margin: 0 0 4px;
+    color: var(--ink-navy);
+  }
+  .ballot-head p{
+    font-size: 13.5px; color: var(--graphite-soft); margin:0; line-height:1.5;
+  }
+
+  .candidates{
+    padding: 20px 28px 8px;
+    display: grid;
+    gap: 14px;
+  }
+
+  .candidate{
+    position: relative;
+    display:flex; align-items:center; gap: 16px;
+    padding: 16px 18px;
+    border: 1.5px solid var(--line);
+    border-radius: var(--radius);
+    background: #fff;
+    cursor: pointer;
+    text-align:left;
+    transition: border-color 0.15s ease, background 0.15s ease;
+    overflow: hidden;
+  }
+  .candidate:hover{ border-color: var(--gold); }
+  .candidate:focus-visible{ outline: 3px solid var(--gold); outline-offset: 2px; }
+  .candidate.selected{
+    border-color: var(--stamp-red);
+    background: var(--stamp-red-soft);
+  }
+
+  .candidate .avatar{
+    width: 52px; height: 52px; border-radius: 50%;
+    background: var(--ink-navy);
+    color: #F1EFE6;
+    font-family:'Fraunces', serif; font-weight:600; font-size: 17px;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink: 0;
+    border: 2px solid var(--paper-card);
+    box-shadow: 0 0 0 1px var(--line);
+  }
+  .candidate .info{ flex: 1; min-width: 0; }
+  .candidate .info .name{
+    font-weight: 600; font-size: 15px; color: var(--ink-navy);
+    margin-bottom: 2px;
+  }
+  .candidate .info .lista{
+    font-size: 12.5px; color: var(--graphite-soft);
+    display:flex; align-items:center; gap:6px;
+  }
+  .candidate .logo-chip{
+    width: 22px; height: 22px; border-radius: 5px;
+    flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-size: 10px; font-weight:700; color:#fff;
+  }
+
+  /* Sello de conformidad — elemento firma */
+  .stamp{
+    position: absolute; right: 14px; top: 50%;
+    width: 46px; height: 46px;
+    transform: translateY(-50%) scale(0) rotate(-18deg);
+    opacity: 0;
+    transition: transform 0.32s cubic-bezier(.34,1.56,.64,1), opacity 0.2s ease;
+    pointer-events: none;
+  }
+  .candidate.selected .stamp{
+    transform: translateY(-50%) scale(1) rotate(-12deg);
+    opacity: 1;
+  }
+  .stamp svg{ width:100%; height:100%; display:block; }
+
+  .ballot-actions{
+    padding: 18px 28px 28px;
+    display:flex; gap: 10px;
+  }
+  .ballot-actions .btn-ghost{ flex: 0 0 110px; }
+  .ballot-actions .btn-primary{ flex:1; }
+
+  .helper-note{
+    font-size: 12px; color: var(--graphite-soft);
+    text-align:center; margin: 14px 0 0;
+  }
+
+  /* ---------- Vista: revisión ---------- */
+  .review-view{ display:none; }
+  .review-view.visible{ display:block; }
+  .review-head{ padding: 26px 28px 6px; text-align:center; }
+  .review-head h2{
+    font-family:'Fraunces', serif; font-size:22px; font-weight:600;
+    color: var(--ink-navy); margin: 10px 0 6px;
+  }
+  .review-head p{ font-size:13.5px; color:var(--graphite-soft); margin:0 0 6px; }
+  .review-list{ padding: 12px 28px; display:grid; gap:10px; }
+  .review-row{
+    display:flex; justify-content:space-between; align-items:center;
+    padding: 12px 16px;
+    border: 1px solid var(--line); border-radius: var(--radius);
+    background:#fff;
+  }
+  .review-row .cargo-name{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 10.5px; letter-spacing:0.05em; text-transform:uppercase;
+    color: var(--graphite-soft); margin-bottom:2px;
+  }
+  .review-row .cand-name{ font-weight:600; font-size:14.5px; color:var(--ink-navy); }
+  .review-row button{
+    background:none; border:none; color:var(--stamp-red);
+    font-size:12.5px; font-weight:600; cursor:pointer; text-decoration:underline;
+  }
+  .review-actions{ padding: 18px 28px 30px; }
+
+  /* ---------- Vista: confirmación ---------- */
+  .confirm-view{ display:none; text-align:center; padding: 46px 32px 38px; }
+  .confirm-view.visible{ display:block; }
+  .confirm-seal{
+    width: 78px; height:78px; margin:0 auto 18px;
+    border-radius:50%;
+    border: 2.5px solid var(--success-green);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .confirm-seal svg{ width:40px; height:40px; }
+  .confirm-view h2{
+    font-family:'Fraunces', serif; font-size:23px; font-weight:600;
+    color: var(--ink-navy); margin: 0 0 8px;
+  }
+  .confirm-view p{ font-size:14px; color:var(--graphite-soft); line-height:1.6; margin:0 0 22px; }
+  .receipt{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 13px; letter-spacing: 0.06em;
+    background: var(--paper);
+    border: 1px dashed var(--line);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    color: var(--graphite-soft);
+  }
+  .receipt b{ color: var(--ink-navy); }
+
+  .foot-note{
+    text-align:center; margin-top: 22px;
+    font-size: 11.5px; color: rgba(241,239,230,0.4);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .stamp, .btn{ transition: none !important; }
+  }
+
+  @media (max-width: 480px){
+    .access-view{ padding: 32px 22px 26px; }
+    .ballot-head, .candidates, .ballot-actions{ padding-left:18px; padding-right:18px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stage">
+
+  <div class="masthead">
+    <div class="eyebrow">Sistema de Votación Escolar</div>
+    <h1>INSTITUCION EDUCATIVA PARTICULAR</h1>
+    <div class="sub" id="mastheadSub">Elección de Municipio Escolar</div>
+    <div class="sub" id="votanteNombre" style="display:none; margin-top:6px; color:var(--gold); font-weight:600;"></div>
+  </div>
+
+  <!-- Progreso de hojas (oculto en acceso y confirmación) -->
+  <div class="sheet-progress" id="sheetProgress"></div>
+
+  <div class="card">
+
+    <!-- ============ VISTA 1: ACCESO CON CÓDIGO ============ -->
+    <div class="access-view" id="viewAccess">
+      <div class="seal-icon">V</div>
+      <h2>Ingresa tu código de acceso</h2>
+      <p class="desc">Es el código único que se te asignó para esta elección. Solo puedes usarlo una vez.</p>
+      <label class="field-label" for="tokenInput">Código de acceso</label>
+      <input type="text" id="tokenInput" class="code-input" placeholder="XXXX-XXXX" maxlength="9">
+      <div class="error-msg" id="tokenError">Código no válido o ya utilizado. Verifica con tu docente.</div>
+      <button class="btn btn-primary" id="btnEntrar">Ingresar a la cédula</button>
+    </div>
+
+    <!-- ============ VISTA 2: CÉDULAS (una por cargo) ============ -->
+    <div id="ballotsContainer"></div>
+
+    <!-- ============ VISTA 3: REVISIÓN ============ -->
+    <div class="review-view" id="viewReview">
+      <div class="review-head">
+        <div class="eyebrow" style="color:var(--gold); font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase;">Antes de confirmar</div>
+        <h2>Revisa tu cédula</h2>
+        <p>Verifica tu selección para cada cargo. Una vez confirmado, tu voto no se puede modificar.</p>
+      </div>
+      <div class="review-list" id="reviewList"></div>
+      <div class="review-actions">
+        <button class="btn btn-stamp" id="btnConfirmar">Estampar y confirmar mi voto</button>
+      </div>
+    </div>
+
+    <!-- ============ VISTA 4: CONFIRMACIÓN ============ -->
+    <div class="confirm-view" id="viewConfirm">
+      <div class="confirm-seal">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M4 12.5L9.5 18L20 6" stroke="#35603F" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h2>Tu voto ha sido registrado</h2>
+      <p>Gracias por participar en la elección del Municipio Escolar. Tu voto es anónimo y ha quedado registrado en el sistema.</p>
+      <div class="receipt">
+        Comprobante: <b id="receiptCode">—</b><br>
+        Hoja: <span id="receiptTime">—</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="foot-note">Este es un mockup de interfaz. Los datos no se envían a ningún servidor.</div>
+</div>
+
+<script>
+  // ---------- Configuración de la API ----------
+  // Vacío porque este archivo se sirve DESDE el mismo servidor PHP del backend
+  // (ver README: coloca este .html dentro de la carpeta backend/).
+  // Si algún día separas frontend y backend en dominios distintos,
+  // vuelve a poner la URL completa aquí y configura CORS en el backend.
+  const API_BASE = '';
+
+  // ---------- Estado ----------
+  let cargos = [];        // se llena con la respuesta de /api/login.php
+  const selections = {};  // { idCargo: idCandidato }
+  let currentSheet = 0;
+
+  // ---------- Utilidad: avatar con foto real o iniciales de respaldo ----------
+  function iniciales(nombre){
+    return nombre.split(' ').filter(Boolean).slice(0,2).map(p => p[0]).join('').toUpperCase();
+  }
+  function avatarHtml(nombre, fotoUrl){
+    if(fotoUrl){
+      return `<img src="${API_BASE}/${fotoUrl}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+    }
+    return iniciales(nombre);
+  }
+  function logoChipHtml(nombre, logoUrl){
+    if(logoUrl){
+      return `<img src="${API_BASE}/${logoUrl}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:5px;">`;
+    }
+    return iniciales(nombre)[0] || '•';
+  }
+
+  // ---------- Render: progreso de hojas ----------
+  function renderProgress(mode){
+    const el = document.getElementById('sheetProgress');
+    if(mode !== 'ballot'){ el.style.display = 'none'; return; }
+    el.style.display = 'flex';
+    el.innerHTML = cargos.map((c, i) => {
+      let cls = '';
+      if(i === currentSheet) cls = 'active';
+      else if(i < currentSheet) cls = 'done';
+      return `<span class="sheet-dot ${cls}">Hoja ${i+1}${i < cargos.length-1 ? '<span class="dash"></span>' : ''}</span>`;
+    }).join('');
+  }
+
+  // ---------- Render: cédulas ----------
+  function renderBallots(){
+    const container = document.getElementById('ballotsContainer');
+    container.innerHTML = cargos.map((cargo, idx) => `
+      <div class="ballot-view" data-sheet="${idx}" id="ballot-${idx}">
+        <div class="ballot-head">
+          <div class="cargo-eyebrow">Cargo ${idx+1} de ${cargos.length}</div>
+          <h2>${cargo.nombre}</h2>
+          <p>${cargo.descripcion}</p>
+        </div>
+        <div class="candidates">
+          ${cargo.candidatos.map(cand => `
+            <div class="candidate" tabindex="0" role="button" data-cargo="${cargo.id}" data-cand="${cand.id}">
+              <div class="avatar">${avatarHtml(cand.nombre, cand.foto_url)}</div>
+              <div class="info">
+                <div class="name">${cand.nombre}</div>
+                <div class="lista">
+                  <span class="logo-chip" style="background:#17223B; overflow:hidden;">${logoChipHtml(cand.nombre, cand.logo_url)}</span>
+                  ${cand.descripcion || ''}
+                </div>
+              </div>
+              <div class="stamp">
+                <svg viewBox="0 0 60 60"><g fill="none" stroke="#9E2A2B" stroke-width="2.2">
+                  <circle cx="30" cy="30" r="26"/>
+                  <circle cx="30" cy="30" r="20"/>
+                  <path d="M20 30l7 7 13-15" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                </g></svg>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="ballot-actions">
+          ${idx > 0 ? `<button class="btn btn-ghost" data-nav="prev">Anterior</button>` : `<div style="flex:0 0 0;"></div>`}
+          <button class="btn btn-primary" data-nav="next" disabled>${idx === cargos.length - 1 ? 'Ir a revisión' : 'Siguiente cargo'}</button>
+        </div>
+        <div class="helper-note">Selecciona un candidato para continuar</div>
+      </div>
+    `).join('');
+
+    container.querySelectorAll('.candidate').forEach(card => {
+      card.addEventListener('click', () => selectCandidate(card));
+      card.addEventListener('keydown', e => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); selectCandidate(card); } });
+    });
+    container.querySelectorAll('[data-nav]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if(btn.dataset.nav === 'next') goToSheet(currentSheet + 1);
+        else goToSheet(currentSheet - 1);
+      });
+    });
+
+    showSheet(0);
+  }
+
+  function selectCandidate(card){
+    const cargoId = card.dataset.cargo;
+    const candId = card.dataset.cand;
+    const ballot = card.closest('.ballot-view');
+    ballot.querySelectorAll('.candidate').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    selections[cargoId] = candId;
+    ballot.querySelector('[data-nav="next"]').disabled = false;
+  }
+
+  function showSheet(index){
+    document.querySelectorAll('.ballot-view').forEach(v => v.classList.remove('visible'));
+    const target = document.getElementById('ballot-' + index);
+    if(target){ target.classList.add('visible'); }
+    currentSheet = index;
+    renderProgress('ballot');
+  }
+
+  function goToSheet(index){
+    if(index >= cargos.length){ showReview(); return; }
+    if(index < 0) return;
+    showSheet(index);
+  }
+
+  // ---------- Vista: revisión ----------
+  function showReview(){
+    document.querySelectorAll('.ballot-view').forEach(v => v.classList.remove('visible'));
+    renderProgress('none');
+    const list = document.getElementById('reviewList');
+    list.innerHTML = cargos.map(cargo => {
+      const candId = selections[cargo.id];
+      const cand = cargo.candidatos.find(c => c.id == candId);
+      return `
+        <div class="review-row">
+          <div>
+            <div class="cargo-name">${cargo.nombre}</div>
+            <div class="cand-name">${cand ? cand.nombre : '— sin selección —'}</div>
+          </div>
+          <button data-edit="${cargo.id}">Cambiar</button>
+        </div>
+      `;
+    }).join('');
+    list.querySelectorAll('[data-edit]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = cargos.findIndex(c => c.id == btn.dataset.edit);
+        document.getElementById('viewReview').classList.remove('visible');
+        showSheet(idx);
+      });
+    });
+    document.getElementById('viewReview').classList.add('visible');
+  }
+
+  // ---------- Flujo de acceso: valida el token contra el backend ----------
+  document.getElementById('btnEntrar').addEventListener('click', async () => {
+    const input = document.getElementById('tokenInput');
+    const error = document.getElementById('tokenError');
+    const boton = document.getElementById('btnEntrar');
+    const tokenAcceso = input.value.trim();
+
+    error.style.display = 'none';
+
+    if(tokenAcceso.length < 4){
+      error.textContent = 'Ingresa tu código de acceso.';
+      error.style.display = 'block';
+      return;
+    }
+
+    boton.disabled = true;
+    boton.textContent = 'Verificando...';
+
+    try {
+      const res = await fetch(`${API_BASE}/api/login.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', // necesario para que la sesión de PHP persista
+        body: JSON.stringify({ token_acceso: tokenAcceso })
+      });
+      const data = await res.json();
+
+      if(!res.ok){
+        error.textContent = data.error || 'No se pudo validar el código de acceso.';
+        error.style.display = 'block';
+        boton.disabled = false;
+        boton.textContent = 'Ingresar a la cédula';
+        return;
+      }
+
+      cargos = data.cargos; // guarda cargos + candidatos reales de la elección
+
+      // Mostrar el nombre real del estudiante y el título real de la elección
+      document.getElementById('mastheadSub').textContent = data.eleccion.titulo;
+      const votanteEl = document.getElementById('votanteNombre');
+      votanteEl.textContent = `Votante: ${data.estudiante.nombres} ${data.estudiante.apellidos}`;
+      votanteEl.style.display = 'block';
+
+      document.getElementById('viewAccess').style.display = 'none';
+      renderBallots();
+
+    } catch (e) {
+      error.textContent = 'No se pudo conectar con el servidor. Intenta nuevamente.';
+      error.style.display = 'block';
+      boton.disabled = false;
+      boton.textContent = 'Ingresar a la cédula';
+    }
+  });
+
+  // ---------- Confirmar voto: envía las selecciones al backend ----------
+  document.getElementById('btnConfirmar').addEventListener('click', async () => {
+    const boton = document.getElementById('btnConfirmar');
+    boton.disabled = true;
+    boton.textContent = 'Registrando voto...';
+
+    try {
+      const res = await fetch(`${API_BASE}/api/votar.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ selecciones: selections })
+      });
+      const data = await res.json();
+
+      if(!res.ok){
+        alert(data.error || 'No se pudo registrar tu voto. Intenta nuevamente.');
+        boton.disabled = false;
+        boton.textContent = 'Estampar y confirmar mi voto';
+        return;
+      }
+
+      document.getElementById('viewReview').classList.remove('visible');
+      document.getElementById('receiptCode').textContent = data.comprobante;
+      document.getElementById('receiptTime').textContent = new Date().toLocaleString('es-PE');
+      document.getElementById('viewConfirm').classList.add('visible');
+
+    } catch (e) {
+      alert('No se pudo conectar con el servidor. Intenta nuevamente.');
+      boton.disabled = false;
+      boton.textContent = 'Estampar y confirmar mi voto';
+    }
+  });
+
+  // Estado inicial
+  renderProgress('none');
+</script>
+
+</body>
+</html>
